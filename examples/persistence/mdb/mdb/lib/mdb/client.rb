@@ -50,7 +50,7 @@ module MDB
                         when :get
                           @server.get_content @path
                         when :put
-                          @server.put @path
+                          @server.put @path, @data, POST_ENCODINGS
                         when :delete
                           @server.delete @path
                         when :post
@@ -107,9 +107,21 @@ module MDB
 
     # POST /:db   returns docid
     def add(document)
-      @rest.post("/#{@db_name}", [document])
+      id = @rest.post("/#{@db_name}", [document])
+      document.id = id if document.respond_to?(:id)
+      id
+    end
+    
+    # PUT /:db/:id
+    def update(id, document)
+      @rest.put("/#{@db_name}/#{id}", [document])
     end
 
+    # DELETE /:db/:id
+    def delete(document)
+      @rest.delete("/#{@db_name}/#{document.id}")
+    end
+    
     def size
       @rest.get("/#{@db_name}/send/size")
     end

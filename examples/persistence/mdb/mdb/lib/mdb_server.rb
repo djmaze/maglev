@@ -34,7 +34,6 @@ raise "==== MDB root not set" if MDB::Server.server.nil?
 #  |        |       |                                       |                   |
 #  | GET    | /:db  | Test if db exists                     | boolean           |
 #  | PUT    | /:db  | NOT SUPPORTED                         |                   |
-#  | POST   | /:db  | Create new document                   | id                |
 #  | DELETE | /:db  | Delete db                             |                   |
 #  |--------+-------+---------------------------------------+-------------------|
 #
@@ -44,8 +43,8 @@ raise "==== MDB root not set" if MDB::Server.server.nil?
 #  | Verb   | Route             | Action                       | View             |
 #  |--------+-------------------+------------------------------+------------------|
 #  | GET    | /:db/:id          | Get document with :id        | serialized objec |
+#  | POST   | /:db              | Create new document          | new id comes back|
 #  | PUT    | /:db/:id          | Update document :id          | status           |
-#  | POST   | /:db/:id          | NOT SUPPORTED                |                  |
 #  | DELETE | /:db/:id          | Delete document :id from :db | status           |
 #  |        |                   |                              |                  |
 #  | POST   | /:db/view/:name   | Run the view                 | data from view   |
@@ -153,6 +152,11 @@ class MDB::ServerApp < Sinatra::Base
     @serializer.serialize(get_db.add(@post_data[0]))
   end
 
+  # Update a document
+  put '/:db/:id' do
+    @serializer.serialize(get_db.update(params[:id].to_i, @post_data[0]))
+  end
+  
   # Delete database
   # The server will delete the database.
   delete '/:db' do

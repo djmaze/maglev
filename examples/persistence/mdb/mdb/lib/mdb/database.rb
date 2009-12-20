@@ -84,6 +84,16 @@ module MDB
       @view.document_added(doc_id, document) if @view.respond_to? :document_added
       doc_id
     end
+    
+    def update(id, document)
+      @documents[id] = document
+      id
+    end
+    
+    def delete(id)
+      @documents.delete(id)
+      id
+    end
 
     # Return the number of documents stored in the database
     def size
